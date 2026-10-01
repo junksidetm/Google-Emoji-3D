@@ -5,9 +5,9 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/mrdarksidetm/Google-Emoji-3D/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/mrdarksidetm/Google-Emoji-3D?display_name=tag&label=Release&style=for-the-badge"></a>
-  <a href="https://github.com/mrdarksidetm/Google-Emoji-3D/actions/workflows/build-and-release.yml"><img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/mrdarksidetm/Google-Emoji-3D/build-and-release.yml?style=for-the-badge&label=Build"></a>
-  <a href="https://github.com/mrdarksidetm/Gboard-patches"><img alt="Gboard Patches Compatible" src="https://img.shields.io/badge/Gboard%20Patches-Compatible-4285F4?style=for-the-badge"></a>
+  <a href="https://github.com/junksidetm/Google-Emoji-3D/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/mrdarksidetm/Google-Emoji-3D?display_name=tag&label=Release&style=for-the-badge"></a>
+  <a href="https://github.com/junksidetm/Google-Emoji-3D/actions/workflows/build-and-release.yml"><img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/mrdarksidetm/Google-Emoji-3D/build-and-release.yml?style=for-the-badge&label=Build"></a>
+  <a href="https://github.com/junksidetm/Gboard-patches"><img alt="Gboard Patches Compatible" src="https://img.shields.io/badge/Gboard%20Patches-Compatible-4285F4?style=for-the-badge"></a>
 </p>
 
 ---
@@ -39,7 +39,7 @@ All assets are fetched, categorized, and compiled entirely in **GitHub Actions c
   - Native Android `CBDT`/`CBLC` Color Bitmap Data and Location tables preserving official `NotoColorEmoji` metrics.
   - Unicode `cmap` Format 12 (32-bit UCS-4) mapping all standard emoji codepoints.
   - OpenType `GSUB` Ligature Substitution (LookupType 4) for multi-codepoint ZWJ sequences.
-- **Rootless Gboard & Instaprime Integration:** Works seamlessly with Instaprime and the **Custom Emoji Font (.ttf)** feature in [mrdarksidetm/Gboard-patches](https://github.com/mrdarksidetm/Gboard-patches) without requiring root, Magisk, or system partition modifications!
+- **Rootless Gboard & Instaprime Integration:** Works seamlessly with Instaprime and the **Custom Emoji Font (.ttf)** feature in [mrdarksidetm/Gboard-patches](https://github.com/junksidetm/Gboard-patches) without requiring root, Magisk, or system partition modifications!
 
 ---
 
@@ -65,7 +65,7 @@ All emojis in `Google Emoji 3D` are indexed with their original Unicode proposal
 
 You can load `GoogleEmoji3D.ttf` directly into Gboard on any Android device using our custom Morphe patch:
 
-1. **Download Font:** Grab `GoogleEmoji3D.ttf` from the [Latest Releases](https://github.com/mrdarksidetm/Google-Emoji-3D/releases/latest).
+1. **Download Font:** Grab `GoogleEmoji3D.ttf` from the [Latest Releases](https://github.com/junksidetm/Google-Emoji-3D/releases/latest).
 2. **Open Gboard Settings:** Navigate to **Gboard Patches** > **Custom Emoji Font (.ttf)**.
 3. **Select Font:**
    - Tap **Enable Custom Emoji Font**.
@@ -118,7 +118,7 @@ Google-Emoji-3D/
 
 ## 📜 Credits & Attribution
 
-- **Project Creator & Maintainer:** [@mrdarksidetm](https://github.com/mrdarksidetm) — Font compilation engine, GitHub Actions build system, categorization, and Gboard integration.
+- **Project Creator & Maintainer:** [@junksidetm](https://github.com/junksidetm) — Font compilation engine, GitHub Actions build system, categorization, and Gboard integration.
 - **Original 3D Artwork & Assets:** [Google LLC](https://github.com/googlefonts/noto-emoji) — Designed by the Google Noto Emoji team.
 - **Data Source:** [Google Fonts Noto Emoji Files](https://googlefonts.github.io/noto-emoji-files/).
 

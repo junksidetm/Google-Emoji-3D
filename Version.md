@@ -125,3 +125,16 @@
   - `VERSION` (Created with 1.1.1)
   - `.github/workflows/build-and-release.yml` (Modified)
   - `Version.md` (Appended)
+## [2026-09-27 12:00:00 IST] - Codeberg Mirror & Release Pipeline Alignment
+- **Action:** Mapped repository to Codeberg (`codeberg.org/mrdarksidetm/Google-Emoji-3D`) and enabled SSH commit signing.
+- **Changes:**
+  - **Remote Architecture:** Configured `codeberg` remote `git@codeberg.org:mrdarksidetm/Google-Emoji-3D.git`.
+  - **Signing:** Verified SSH key signing for commit integrity.
+- **Status:** 100% (Configured).
+
+## [2026-10-01 12:47:00 IST] - README Documentation GitHub Links Migration
+- **Action**: Updated README.md documentation links, badges, and author references to point to active GitHub account `junksidetm` while preserving GitLab and Codeberg mappings.
+- **Files Modified**:
+  - `README.md`
+  - `Version.md`
+- **Status**: 100% (Completed & Synced)
