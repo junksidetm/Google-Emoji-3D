@@ -1,18 +1,7 @@
-# Google Emoji 3D 🎨
-
-<p align="center">
-  <b>TrueType (.ttf) Color Emoji Font compiled from Google's official 3D Noto Emoji assets (Android 17 Preview style)</b>
-</p>
-
-<p align="center">
-  <a href="https://github.com/junksidetm/Google-Emoji-3D/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/mrdarksidetm/Google-Emoji-3D?display_name=tag&label=Release&style=for-the-badge"></a>
-  <a href="https://github.com/junksidetm/Google-Emoji-3D/actions/workflows/build-and-release.yml"><img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/mrdarksidetm/Google-Emoji-3D/build-and-release.yml?style=for-the-badge&label=Build"></a>
-  <a href="https://github.com/junksidetm/Gboard-patches"><img alt="Gboard Patches Compatible" src="https://img.shields.io/badge/Gboard%20Patches-Compatible-4285F4?style=for-the-badge"></a>
-</p>
-
----
-
-## 🌟 Overview
+<div align="center">
+  <img src="https://fonts.gstatic.com/s/e/noto3demoji/latest/1fae0/512.png" alt="🫠" width="100" height="100">
+  <h1>Google Emoji 3D 🎨</h1>
+</div>
 
 **Google Emoji 3D** transforms Google's official volumetric 3D emoji designs (introduced for upcoming Android 17 releases) into an installable, system-wide TrueType font (`.ttf`).
 
@@ -20,7 +9,11 @@ Just as Apple (iOS), Samsung, WhatsApp, and Facebook apply custom visual styling
 
 All assets are fetched, categorized, and compiled entirely in **GitHub Actions cloud runners**, meaning **zero disk bloat or heavy RAM usage on local machines**.
 
----
+<div align="center">
+  <a href="https://github.com/junksidetm/Google-Emoji-3D/releases/download/v1.1.1/GoogleEmoji3D.ttf/">
+    <img src="https://raw.githubusercontent.com/junksidetm/assests/d8774837b8c8658389ea37193a77a9a100414bc5/Images/badges/SVG%20-%20Version/Download-File%20Badge.svg" alt="Download file badge" width="200">
+  </a>
+</div>
 
 ## ✨ Key Features
 
@@ -39,9 +32,7 @@ All assets are fetched, categorized, and compiled entirely in **GitHub Actions c
   - Native Android `CBDT`/`CBLC` Color Bitmap Data and Location tables preserving official `NotoColorEmoji` metrics.
   - Unicode `cmap` Format 12 (32-bit UCS-4) mapping all standard emoji codepoints.
   - OpenType `GSUB` Ligature Substitution (LookupType 4) for multi-codepoint ZWJ sequences.
-- **Rootless Gboard & Instaprime Integration:** Works seamlessly with Instaprime and the **Custom Emoji Font (.ttf)** feature in [mrdarksidetm/Gboard-patches](https://github.com/junksidetm/Gboard-patches) without requiring root, Magisk, or system partition modifications!
-
----
+- **Rootless Gboard & Instaprime Integration:** Works seamlessly with Instaprime and the **Custom Emoji Font (.ttf)** feature in [junksidetm/Gboard-patches](https://github.com/junksidetm/Gboard-patches) without requiring root, Magisk, or system partition modifications!
 
 ## 📂 Category Breakdown
 
@@ -59,21 +50,17 @@ All emojis in `Google Emoji 3D` are indexed with their original Unicode proposal
 | **Symbols** | 274 | Geometric shapes, zodiac, arrows, multimedia controls, and badges | 💖 ⚡ 🔔 🛑 ➡️ 🔲 💯 |
 | **Flags** | 281 | Regional indicators, national flags, and sub-division banners | 🇺🇸 🇮🇳 🇯🇵 🇬🇧 🇩🇪 🇫🇷 🏁 |
 
----
-
 ## 🚀 How to Use in Gboard
 
 You can load `GoogleEmoji3D.ttf` directly into Gboard on any Android device using our custom Morphe patch:
 
-1. **Download Font:** Grab `GoogleEmoji3D.ttf` from the [Latest Releases](https://github.com/junksidetm/Google-Emoji-3D/releases/latest).
+1. **Download Font:** Grab `GoogleEmoji3D.ttf` from the [Latest Releases](https://github.com/junksidetm/assests/latest).
 2. **Open Gboard Settings:** Navigate to **Gboard Patches** > **Custom Emoji Font (.ttf)**.
 3. **Select Font:**
    - Tap **Enable Custom Emoji Font**.
    - Tap **Select .ttf Font File** and pick `GoogleEmoji3D.ttf` from your device storage.
 4. **Live Preview:** Check the in-app preview card to see the 3D glyphs immediately rendered.
 5. **Type in 3D:** Open any text field — your Gboard keyboard now displays the 3D emoji set!
-
----
 
 ## ⚙️ Building via GitHub Actions
 
@@ -91,8 +78,6 @@ Because high-resolution PNGs take substantial bandwidth and memory, building is 
    - Build `GoogleEmoji3D.ttf` with OpenType color tables.
    - Run verification tests.
    - Publish a new GitHub Release with the compiled font.
-
----
 
 ## 🛠️ Repository Architecture
 
@@ -114,15 +99,11 @@ Google-Emoji-3D/
 └── README.md                        # Documentation & setup guide
 ```
 
----
-
 ## 📜 Credits & Attribution
 
 - **Project Creator & Maintainer:** [@junksidetm](https://github.com/junksidetm) — Font compilation engine, GitHub Actions build system, categorization, and Gboard integration.
 - **Original 3D Artwork & Assets:** [Google LLC](https://github.com/googlefonts/noto-emoji) — Designed by the Google Noto Emoji team.
 - **Data Source:** [Google Fonts Noto Emoji Files](https://googlefonts.github.io/noto-emoji-files/).
-
----
 
 ## ⚖️ License
 
