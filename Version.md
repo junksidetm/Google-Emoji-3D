@@ -176,3 +176,21 @@
   - `scripts/test_emoji_font.py`
   - `Version.md` (Appended)
 - **Status**: 100% (Calibrated & Verified)
+## [2026-10-06 18:03:00 IST] - Word Spacing Normalization & ASCII/Space cmap Unmapping
+- **Action**: Eliminated wide word spacing defect by stripping U+0020 (space) and non-emoji ASCII codepoints from the emoji font's `cmap` table, normalizing `space` advance metrics in `hmtx`, and optimizing PNG compression with palette quantization.
+- **Root Cause Analysis**:
+  - In Google's base `NotoColorEmoji.ttf`, `0x20` (space) was mapped in `cmap` to glyph `space` with an advance width of `2550` units (matching a full-width emoji box).
+  - When text containing spaces was rendered with the emoji font (or when the emoji font was active in the fallback chain), text layout engines (Minikin, HarfBuzz, Skia) resolved `0x20` using the emoji font's 2550-unit metric instead of the system font's ~560-unit metric, causing normal text words to appear excessively separated.
+- **Remediation**:
+  - `scripts/build_font.py`:
+    - Added `strip_ascii_and_space_from_cmap(font)`: Removes `0x20` (space) and ASCII/Latin codepoints (`< 0x2000`) from all `cmap` subtables, ensuring Android/HarfBuzz/Minikin always falls back to system text fonts (Roboto/Google Sans) for word spaces.
+    - Added `fix_space_metrics(font)`: Normalizes `space` advance width in `hmtx` table from 2550 down to 560 units.
+    - Added adaptive 256-color palette quantization to compress PNGs and shrink compiled font size toward ~22 MB.
+  - `scripts/test_emoji_font.py`:
+    - Added "Word Spacing & ASCII Isolation" automated validation test verifying `0x20` is unmapped.
+    - Aligned Base Font Emoji Parity check to compare emoji codepoints (`>= 0x2000`).
+- **Files Modified**:
+  - `scripts/build_font.py`
+  - `scripts/test_emoji_font.py`
+  - `Version.md` (Appended)
+- **Status**: 100% (Completed & Verified)

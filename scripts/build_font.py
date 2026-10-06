@@ -159,6 +159,37 @@ def patch_cbdt_table(font, glyph_png_map):
 
     return patched_count
 
+def strip_ascii_and_space_from_cmap(font):
+    """
+    Remove space (U+0020) and ASCII/Latin codepoints from the emoji font's cmap table.
+    Emoji fonts should never map space or ASCII characters; otherwise, text rendering engines
+    (such as Android's Minikin/HarfBuzz) will use the emoji font's massive advance width (2550 units)
+    for spaces between normal words, causing words to appear excessively separated.
+    """
+    if "cmap" not in font:
+        return
+    removed = 0
+    for subtable in font["cmap"].tables:
+        if hasattr(subtable, "cmap") and subtable.cmap:
+            to_remove = [cp for cp in subtable.cmap if 0x20 <= cp < 0x2000]
+            for cp in to_remove:
+                del subtable.cmap[cp]
+                removed += 1
+    print(f"[*] Stripped {removed} ASCII/space/symbol codepoints (< 0x2000) from cmap to guarantee normal word spacing.")
+
+def fix_space_metrics(font):
+    """
+    Adjust advance width for space glyph in hmtx table to standard text space width (~560 units)
+    as a secondary safeguard against wide word spacing.
+    """
+    if "hmtx" in font:
+        hmtx = font["hmtx"]
+        for space_name in ["space", "uni0020", "u0020"]:
+            if space_name in hmtx.metrics:
+                width, lsb = hmtx.metrics[space_name]
+                hmtx.metrics[space_name] = (560, lsb)
+                print(f"[*] Adjusted '{space_name}' advance width from {width} to 560 units in hmtx table.")
+
 def compile_google_emoji_3d():
     print("[*] Ensuring official Android base font...")
     base_font_file = ensure_base_font()
@@ -200,7 +231,11 @@ def compile_google_emoji_3d():
             canvas = Image.new("RGBA", (136, 128), (0, 0, 0, 0))
             canvas.paste(img, (4, 0))
             out_buf = BytesIO()
-            canvas.save(out_buf, format="PNG", optimize=True, compress_level=9)
+            try:
+                quantized = canvas.quantize(colors=256, method=Image.Resampling.LANCZOS)
+                quantized.save(out_buf, format="PNG", optimize=True)
+            except Exception:
+                canvas.save(out_buf, format="PNG", optimize=True, compress_level=9)
             png_bytes = out_buf.getvalue()
         except Exception:
             png_bytes = raw_bytes
@@ -229,6 +264,10 @@ def compile_google_emoji_3d():
         if table_tag in font:
             del font[table_tag]
             print(f"[*] Stripped '{table_tag}' table to enforce pure native CBDT/CBLC bitmap rendering.")
+
+    print("[*] Normalizing space metrics and removing ASCII/space collisions from cmap...")
+    strip_ascii_and_space_from_cmap(font)
+    fix_space_metrics(font)
 
     print("[*] Updating font identity metadata in 'name' table...")
     update_name_table(font)

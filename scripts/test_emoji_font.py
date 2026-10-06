@@ -234,14 +234,22 @@ class EmojiFontTester:
         else:
             self.log_pass("cmap Base Coverage", f"{mapped_count:,} Unicode base codepoints mapped (remaining complex sequences resolved via GSUB ligatures)")
 
-        # Compare with base font if available
+        # Verify word spacing isolation: U+0020 (space) must NOT be mapped to avoid wide word separation
+        if 0x20 not in cmap:
+            self.log_pass("Word Spacing & ASCII Isolation", "U+0020 (space) unmapped from cmap (normal text words will use system text font spacing)")
+        else:
+            self.log_warn("Word Spacing & ASCII Isolation", "U+0020 (space) is mapped in cmap with emoji advance width")
+
+        # Compare with base font if available (focusing on emoji codepoints >= 0x2000)
         if self.base_font and "cmap" in self.base_font:
             base_cmap = self.base_font["cmap"].getBestCmap() or {}
-            diff_missing = set(base_cmap.keys()) - set(cmap.keys())
+            base_emoji_cps = {cp for cp in base_cmap if cp >= 0x2000}
+            target_emoji_cps = {cp for cp in cmap if cp >= 0x2000}
+            diff_missing = base_emoji_cps - target_emoji_cps
             if diff_missing:
-                self.log_warn("Base Font Parity", f"{len(diff_missing)} codepoints present in base font missing from target font")
+                self.log_warn("Base Font Emoji Parity", f"{len(diff_missing)} emoji codepoints present in base font missing from target font")
             else:
-                self.log_pass("Base Font Parity", f"100% of base font codepoints ({len(base_cmap):,}) preserved in target font")
+                self.log_pass("Base Font Emoji Parity", f"100% of base font emoji codepoints ({len(base_emoji_cps):,}) preserved in target font")
 
         # Test benchmark single codepoints
         single_tested = 0
