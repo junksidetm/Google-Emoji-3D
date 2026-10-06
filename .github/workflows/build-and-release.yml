@@ -94,6 +94,10 @@ jobs:
         run: |
           python scripts/verify_font.py build/GoogleEmoji3D.ttf
 
+      - name: Test Emoji Font & OpenType Standards Conformance
+        run: |
+          python scripts/test_emoji_font.py build/GoogleEmoji3D.ttf --base data/NotoColorEmoji.base.ttf
+
       - name: Package Release Assets
         shell: pwsh
         run: |

@@ -138,3 +138,26 @@
   - `README.md`
   - `Version.md`
 - **Status**: 100% (Completed & Synced)
+## [2026-10-06 17:24:20 IST] - Font Quality Hardening, Table Conflict Resolution & Cross-Platform Tester
+- **Action**: Resolved font rendering defects caused by COLR/CPAL vector table shadowing over CBDT bitmaps, added high-compression PNG encoding, and implemented a comprehensive OpenType font tester suite in GitHub Actions.
+- **Root Cause Analysis of Font Display Defects**:
+  - The base font `NotoColorEmoji.ttf` from Google Fonts includes both modern COLR/CPAL vector tables and CBDT/CBLC bitmap tables.
+  - On modern rendering engines (Android 12L/13+, Chrome, Windows DirectWrite), text layout shapers strictly prioritize COLR over CBDT. Because previous builds only patched CBDT, systems bypassed 3D bitmaps and rendered flat 2D vector emojis.
+  - Large uncompressed PNG payloads caused the font to balloon to 65.85 MB, causing memory allocation failures or dropped glyphs under restricted Android app heaps (Gboard, Instaprime).
+- **Remediation & Enhancements**:
+  - `scripts/build_font.py`: Added explicit stripping of conflicting vector/color tables (`COLR`, `CPAL`, `sbix`, `SVG `) ensuring pure, unshadowed CBDT/CBLC bitmap rendering on Android; added level-9 PNG compression.
+  - `scripts/test_emoji_font.py`: Created 7-phase OpenType verification suite testing:
+    1. SFNT container parsing & heap size benchmark.
+    2. Required tables & color table precedence conflict detection.
+    3. Typography metrics bounds (`head.magicNumber`, `unitsPerEm`, `hhea`, `OS/2`).
+    4. Naming table records & whitespace-free PostScript naming.
+    5. Unicode `cmap` coverage and benchmark sequences (single, VS16, skin tone modifiers, ZWJ sequences, and regional flag pairs).
+    6. `CBDT`/`CBLC` strike parity, PNG magic headers, and Format 17 `SmallGlyphMetrics`.
+    7. Multi-target cross-platform compatibility diagnostics.
+  - `.github/workflows/build-and-release.yml`: Integrated `test_emoji_font.py` as an automated CI job step.
+- **Files Created/Modified**:
+  - `scripts/test_emoji_font.py` (Created)
+  - `scripts/build_font.py` (Modified)
+  - `.github/workflows/build-and-release.yml` (Modified)
+  - `Version.md` (Appended)
+- **Status**: 100% (Completed & Verified)

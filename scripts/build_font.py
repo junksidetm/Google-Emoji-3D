@@ -200,7 +200,7 @@ def compile_google_emoji_3d():
             canvas = Image.new("RGBA", (136, 128), (0, 0, 0, 0))
             canvas.paste(img, (4, 0))
             out_buf = BytesIO()
-            canvas.save(out_buf, format="PNG", optimize=True)
+            canvas.save(out_buf, format="PNG", optimize=True, compress_level=9)
             png_bytes = out_buf.getvalue()
         except Exception:
             png_bytes = raw_bytes
@@ -224,9 +224,11 @@ def compile_google_emoji_3d():
     cbdt_patched = patch_cbdt_table(font, glyph_png_map)
     print(f"[+] Successfully patched {cbdt_patched} glyphs in CBDT table.")
 
-    # Strip redundant sbix table if present to keep font pure native Android CBDT/CBLC
-    if "sbix" in font:
-        del font["sbix"]
+    # Strip conflicting or redundant color tables so CBDT/CBLC takes precedence on Android
+    for table_tag in ["COLR", "CPAL", "sbix", "SVG "]:
+        if table_tag in font:
+            del font[table_tag]
+            print(f"[*] Stripped '{table_tag}' table to enforce pure native CBDT/CBLC bitmap rendering.")
 
     print("[*] Updating font identity metadata in 'name' table...")
     update_name_table(font)
