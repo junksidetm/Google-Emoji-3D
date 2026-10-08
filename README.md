@@ -1,6 +1,11 @@
 <div align="center">
   <img src="https://fonts.gstatic.com/s/e/noto3demoji/latest/1fae0/512.png" alt="🫠" width="100" height="100">
   <h1>Google Emoji 3D 🎨</h1>
+  <p>
+    <a href="https://github.com/junksidetm/Google-Emoji-3D"><img src="https://img.shields.io/badge/GitHub-Main-181717?style=flat-square&logo=github&logoColor=white" alt="GitHub Main" /></a>
+    <a href="https://codeberg.org/mrdarksidetm/Google-Emoji-3D"><img src="https://img.shields.io/badge/Codeberg-Mirror-2185d0?style=flat-square&logo=codeberg&logoColor=white" alt="Codeberg Mirror" /></a>
+    <a href="https://gitlab.com/mrdarksidetm/Google-Emoji-3D"><img src="https://img.shields.io/badge/GitLab-Mirror-fc6d26?style=flat-square&logo=gitlab&logoColor=white" alt="GitLab Mirror" /></a>
+  </p>
 </div>
 
 **Google Emoji 3D** transforms Google's official volumetric 3D emoji designs (introduced for upcoming Android 17 releases) into an installable, system-wide TrueType font (`.ttf`).
@@ -104,6 +109,14 @@ Google-Emoji-3D/
 - **Project Creator & Maintainer:** [@junksidetm](https://github.com/junksidetm) — Font compilation engine, GitHub Actions build system, categorization, and Gboard integration.
 - **Original 3D Artwork & Assets:** [Google LLC](https://github.com/googlefonts/noto-emoji) — Designed by the Google Noto Emoji team.
 - **Data Source:** [Google Fonts Noto Emoji Files](https://googlefonts.github.io/noto-emoji-files/).
+
+## 🌐 Source Mirrors
+
+- **Main (GitHub)**: [github.com/junksidetm/Google-Emoji-3D](https://github.com/junksidetm/Google-Emoji-3D)
+- **Mirror (Codeberg)**: [codeberg.org/mrdarksidetm/Google-Emoji-3D](https://codeberg.org/mrdarksidetm/Google-Emoji-3D)
+- **Mirror (GitLab)**: [gitlab.com/mrdarksidetm/Google-Emoji-3D](https://gitlab.com/mrdarksidetm/Google-Emoji-3D)
+
+---
 
 ## ⚖️ License
 

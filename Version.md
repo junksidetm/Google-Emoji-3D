@@ -194,3 +194,10 @@
   - `scripts/test_emoji_font.py`
   - `Version.md` (Appended)
 - **Status**: 100% (Completed & Verified)
+
+## [2026-10-08 18:05:50 IST] - Source Mirrors Documentation Integration
+- **Action**: Added GitHub (Main), Codeberg (Mirror), and GitLab (Mirror) repository badges and dedicated Source Mirrors section in README.md.
+- **Files Modified**:
+  - `README.md`
+  - `Version.md`
+- **Status**: 100% (Completed & Synced)
