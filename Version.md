@@ -201,3 +201,19 @@
   - `README.md`
   - `Version.md`
 - **Status**: 100% (Completed & Synced)
+
+## [2026-10-09 18:20:00 IST] - Upstream Change Detection Engine, Dynamic Version Progression & New Tag Release Architecture
+- **Action:** Upgraded CI/CD and build toolchain to detect upstream PNG additions in `googlefonts/noto-emoji`, dynamically bump semver, update `Version.md`, and publish distinct tagged releases instead of single rolling release overwrites.
+- **Root Cause & Rationale:**
+  - Previously, `build-and-release.yml` used a static `v1.1.1` tag and continuously overwrote the single release asset.
+  - Downstream consumers like `instafel` and `Alpha-Insta` require fresh releases with incrementing semver tags (`v1.1.2`, `v1.1.3`, etc.) whenever Google publishes new 3D volumetric emoji PNG assets.
+- **Remediation & Enhancements:**
+  - `scripts/check_upstream_updates.py`: Implemented upstream change detector comparing latest commit SHA on `googlefonts/noto-emoji` (`3D/` path) and emoji count in `emojis_data.js` against stored state in `.upstream_state.json`. When changes exist, automatically bumps patch semver in `VERSION`, appends entry to `Version.md`, and exports workflow parameters.
+  - `.upstream_state.json`: Initialized baseline tracking commit `d6a792cb12e3eb7224f4fbf13173a0dded455651` and 3,988 emojis.
+  - `.github/workflows/build-and-release.yml`: Upgraded workflow from `actions/checkout@v6` (invalid) to `@v4`, integrated `check_upstream_updates.py`, committed bumped `VERSION` and `Version.md` back to repository with git tag `v<NEW_VERSION>`, and published a new GitHub Release with all artifacts (`GoogleEmoji3D.ttf`, `GoogleEmoji3D-128px.zip`, `categories_manifest.json`, `emojis_metadata.json`).
+- **Files Created/Modified:**
+  - `scripts/check_upstream_updates.py` (Created)
+  - `.upstream_state.json` (Created)
+  - `.github/workflows/build-and-release.yml` (Modified)
+  - `Version.md` (Appended)
+- **Status:** 100% (Completed & Synced)

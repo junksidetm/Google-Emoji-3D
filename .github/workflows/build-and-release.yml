@@ -2,10 +2,15 @@ name: Build and Release Google Emoji 3D TTF
 
 on:
   schedule:
-    # Autonomous sync & rebuild when new 3D PNG assets are published by Google (every 4 hours)
+    # Autonomous check for new Google 3D PNG assets every 4 hours
     - cron: '0 */4 * * *'
   workflow_dispatch:
     inputs:
+      force_build:
+        description: 'Force font compilation and bump tag even if no new upstream commits found'
+        required: false
+        type: boolean
+        default: false
       resolution:
         description: 'Bitmap strike resolution (px)'
         required: false
@@ -22,25 +27,10 @@ on:
         type: number
         default: 50
       tag_name:
-        description: 'Release tag to update / overwrite'
+        description: 'Specific release tag override (e.g. v1.1.2, leave empty for auto-bump)'
         required: false
         type: string
-        default: 'v1.0.0'
-      create_release:
-        description: 'Publish / Overwrite as GitHub Release'
-        required: false
-        type: boolean
-        default: true
-  push:
-    branches:
-      - main
-    paths:
-      - 'output/png/**'
-      - 'scripts/**'
-      - 'data/**'
-      - '.github/workflows/**'
-    tags:
-      - 'v*'
+        default: ''
   repository_dispatch:
     types: [new-pngs, sync-emojis, release]
 
@@ -53,7 +43,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
@@ -66,7 +59,16 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Check Upstream Google 3D Updates
+        id: upstream_check
+        env:
+          FORCE_BUILD: ${{ inputs.force_build || (github.event_name == 'workflow_dispatch' && inputs.tag_name != '') }}
+          INPUT_TAG_NAME: ${{ inputs.tag_name || '' }}
+        run: |
+          python scripts/check_upstream_updates.py
+
       - name: Cache downloaded 3D PNG assets
+        if: steps.upstream_check.outputs.has_update == 'true'
         uses: actions/cache@v4
         id: png-cache
         with:
@@ -77,28 +79,34 @@ jobs:
             noto-3d-pngs-
 
       - name: Fetch and Categorize Metadata
+        if: steps.upstream_check.outputs.has_update == 'true'
         run: |
           python scripts/fetch_metadata.py
 
       - name: Parallel Download 3D PNG Assets
+        if: steps.upstream_check.outputs.has_update == 'true'
         run: |
           python scripts/download_assets.py \
             --resolution ${{ inputs.resolution || '128' }} \
             --concurrency ${{ inputs.concurrency || '50' }}
 
       - name: Compile Google Emoji 3D TTF Font
+        if: steps.upstream_check.outputs.has_update == 'true'
         run: |
           python scripts/build_font.py
 
       - name: Verify Font Integrity
+        if: steps.upstream_check.outputs.has_update == 'true'
         run: |
           python scripts/verify_font.py build/GoogleEmoji3D.ttf
 
       - name: Test Emoji Font & OpenType Standards Conformance
+        if: steps.upstream_check.outputs.has_update == 'true'
         run: |
           python scripts/test_emoji_font.py build/GoogleEmoji3D.ttf --base data/NotoColorEmoji.base.ttf
 
       - name: Package Release Assets
+        if: steps.upstream_check.outputs.has_update == 'true'
         shell: pwsh
         run: |
           $res = "${{ inputs.resolution || '128' }}"
@@ -112,6 +120,7 @@ jobs:
           "ARCHIVE_NAME=$archiveName" >> $env:GITHUB_ENV
 
       - name: Upload Build Artifacts
+        if: steps.upstream_check.outputs.has_update == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: GoogleEmoji3D-${{ inputs.resolution || '128' }}px
@@ -120,54 +129,49 @@ jobs:
             build/*.zip
             data/categories_manifest.json
 
-      - name: Resolve Version
-        id: version
-        shell: pwsh
+      - name: Commit & Tag New Release Version
+        if: steps.upstream_check.outputs.has_update == 'true'
+        env:
+          NEW_TAG: ${{ steps.upstream_check.outputs.new_tag }}
+          NEW_VERSION: ${{ steps.upstream_check.outputs.new_version }}
         run: |
-          $ver = "1.1.1"
-          if (Test-Path "VERSION") {
-              $ver = (Get-Content "VERSION" -Raw).Trim()
-          }
-          $tag = if (-not [string]::IsNullOrWhiteSpace("${{ inputs.tag_name }}")) {
-              "${{ inputs.tag_name }}"
-          } else {
-              "v$ver"
-          }
-          if (-not $tag.StartsWith("v")) { $tag = "v$tag" }
-          "tag=$tag" >> $env:GITHUB_OUTPUT
-          "version=$ver" >> $env:GITHUB_OUTPUT
+          git config --local user.name "junksidetm"
+          git config --local user.email "331540275+junksidetm@users.noreply.github.com"
+          git add VERSION Version.md .upstream_state.json data/categories_manifest.json data/emojis_metadata.json
+          git commit -m "release: $NEW_TAG - autonomous Google 3D emoji sync [skip ci]" || echo "No changes to commit"
+          git tag -a "$NEW_TAG" -m "Google Emoji 3D $NEW_TAG release"
+          git push origin main --tags
 
-      - name: Create or Overwrite GitHub Release
-        if: ${{ inputs.create_release != false || startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main' }}
+      - name: Publish New GitHub Release
+        if: steps.upstream_check.outputs.has_update == 'true'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.version.outputs.tag }}
-          name: Google Emoji 3D (${{ steps.version.outputs.tag }})
+          tag_name: ${{ steps.upstream_check.outputs.new_tag }}
+          name: Google Emoji 3D (${{ steps.upstream_check.outputs.new_tag }})
           body: |
-            ## 🎨 Google Emoji 3D (Android 17 Volumetric Style)
+            ## 🎨 Google Emoji 3D (Android 17 Volumetric Style) - ${{ steps.upstream_check.outputs.new_tag }}
 
             TrueType (`.ttf`) color emoji font compiled autonomously from Google's official 3D Noto Emoji assets.
-            This single rolling release is continuously updated, overwriting the font asset with newly patched 3D emojis.
+            Autonomously compiled when Google updated upstream 3D PNG assets (`googlefonts/noto-emoji`).
 
             ### 📦 Release Details
             - **Font File:** `GoogleEmoji3D.ttf` (${{ env.FONT_SIZE_MB }} MB)
             - **Format:** OpenType / TrueType native Android `CBDT`/`CBLC` color bitmap strikes with exact Format 17 136x128 metrics, `cmap` Format 12, and `GSUB` sequence ligatures.
             - **Base Font:** Official Google Android `NotoColorEmoji.ttf` (Unicode 17.0, v2.051) with native OpenType tables, patched with Google 3D volumetric assets.
-            - **Compatible with:** Gboard (via Custom Emoji Font in [mrdarksidetm/Gboard-patches](https://github.com/mrdarksidetm/Gboard-patches)), Instaprime, Instagram, WhatsApp, Android system font managers, and Linux/FreeType apps.
+            - **Compatible with:** Instafel, Gboard (via Custom Emoji Font in [mrdarksidetm/Gboard-patches](https://github.com/mrdarksidetm/Gboard-patches)), WhatsApp, Android system font managers, and Linux/FreeType apps.
 
             ### 📁 Included Assets
-            - `GoogleEmoji3D.ttf`: Standalone emoji font file ready to load in Gboard or install on system.
+            - `GoogleEmoji3D.ttf`: Standalone emoji font file ready to bundle in Instafel or install on system.
+            - `GoogleEmoji3D-128px.zip`: Complete archive with manifests and documentation.
             - `categories_manifest.json`: Full categorized taxonomy matching Google Fonts Emoji.
             - `emojis_metadata.json`: Comprehensive Unicode proposal and CLDR metadata.
 
-            ### 🚀 Installation in Gboard
-            1. Download `GoogleEmoji3D.ttf` to your phone.
-            2. Open **Gboard Settings** > **Gboard Patches** > **Custom Emoji Font (.ttf)**.
-            3. Tap **Select .ttf Font File** and choose `GoogleEmoji3D.ttf`.
-            4. Enjoy full 3D emojis right in your Gboard keyboard!
+            ### 🚀 Installation in Instafel & Gboard
+            - **Instafel:** Long-press Home button -> Typography & Emojis -> Enable Custom Emojis -> Select Google 3D Emojis.
+            - **Gboard:** Open Gboard Settings > Gboard Patches > Custom Emoji Font (.ttf) > Choose `GoogleEmoji3D.ttf`.
           files: |
             build/GoogleEmoji3D.ttf
             build/${{ env.ARCHIVE_NAME }}
             data/categories_manifest.json
+            data/emojis_metadata.json
           make_latest: true
-          overwrite: true
