@@ -1,0 +1,13 @@
+image: python:3.11-alpine
+
+stages:
+  - test
+
+lint-python:
+  stage: test
+  script:
+    - echo "Validating Python syntax for all scripts..."
+    - python3 -m py_compile scripts/*.py
+    - echo "Python syntax validation passed!"
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
